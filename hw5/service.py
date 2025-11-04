@@ -1,7 +1,5 @@
 from typing import Literal
-
 import pickle
-
 from fastapi import FastAPI
 from pydantic import BaseModel
 
