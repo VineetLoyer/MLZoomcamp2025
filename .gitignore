@@ -1,0 +1,33 @@
+# Data files (too large for GitHub)
+Capstone Project 1/data/*.csv
+
+# Kiro files
+.kiro/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# pytest
+.pytest_cache/
+.hypothesis/
+
+# Model files (optional - uncomment if models are too large)
+# Capstone Project 1/models/*.pkl

@@ -1,0 +1,54 @@
+{
+  "training_date": "2026-01-01T17:16:39.821633",
+  "model_type": "Logistic Regression",
+  "dimensions": [
+    "IE",
+    "NS",
+    "TF",
+    "JP"
+  ],
+  "test_metrics": [
+    {
+      "dimension": "IE",
+      "accuracy": 0.7809798270893372,
+      "f1": 0.5652173913043479
+    },
+    {
+      "dimension": "NS",
+      "accuracy": 0.8265129682997118,
+      "f1": 0.46345811051693403
+    },
+    {
+      "dimension": "TF",
+      "accuracy": 0.8167146974063401,
+      "f1": 0.8277356446370531
+    },
+    {
+      "dimension": "JP",
+      "accuracy": 0.7123919308357348,
+      "f1": 0.785744954916273
+    }
+  ],
+  "final_models": [
+    {
+      "dimension": "IE",
+      "model_name": "Logistic Regression",
+      "val_f1": 0.5829596412556054
+    },
+    {
+      "dimension": "NS",
+      "model_name": "Logistic Regression",
+      "val_f1": 0.46486486486486495
+    },
+    {
+      "dimension": "TF",
+      "model_name": "Logistic Regression",
+      "val_f1": 0.8105436573311366
+    },
+    {
+      "dimension": "JP",
+      "model_name": "Gradient Boosting",
+      "val_f1": 0.7850707850707851
+    }
+  ]
+}
