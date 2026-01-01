@@ -237,69 +237,45 @@ docker run -d -p 8080:8080 -e PORT=8080 mbti-predictor
 
 ## Cloud Deployment (Railway)
 
-The service can be deployed to [Railway](https://railway.app/) for cloud hosting.
+The service is deployed on [Railway](https://railway.app/) and available at:
 
-### Prerequisites
+**Live URL:** https://mlzoomcamp2025-production.up.railway.app
 
-- Railway account (sign up at https://railway.app/)
-- Railway CLI installed: `npm install -g @railway/cli`
-- Git repository with your project
+### Test the Live Service
 
-### Deployment Steps
-
-1. **Login to Railway CLI:**
+Health check:
 ```bash
-railway login
+curl https://mlzoomcamp2025-production.up.railway.app/health
 ```
 
-2. **Initialize a new Railway project:**
+Make a prediction:
 ```bash
+curl -X POST https://mlzoomcamp2025-production.up.railway.app/predict \
+  -H "Content-Type: application/json" \
+  -d '{"text": "I love spending time alone reading books and thinking about abstract concepts. I prefer deep conversations over small talk and enjoy analyzing complex problems."}'
+```
+
+### Deploy Your Own Instance
+
+1. **Install Railway CLI:**
+```bash
+npm install -g @railway/cli
+```
+
+2. **Login and initialize:**
+```bash
+railway login
 railway init
 ```
 
-3. **Deploy the service:**
+3. **Set root directory** (in Railway dashboard):
+   - Go to Service Settings → Source → Root Directory
+   - Set to: `Capstone Project 1`
+
+4. **Deploy:**
 ```bash
 railway up
-```
-
-4. **Generate a public URL:**
-```bash
 railway domain
-```
-
-Railway will automatically:
-- Detect the Dockerfile
-- Build the container
-- Deploy and expose the service
-- Provide a public URL (e.g., `https://mbti-predictor-production.up.railway.app`)
-
-### Testing the Deployed Service
-
-Once deployed, test the service using the Railway-provided URL:
-
-```bash
-# Health check
-curl https://your-app.up.railway.app/health
-
-# Make a prediction
-curl -X POST https://your-app.up.railway.app/predict \
-  -H "Content-Type: application/json" \
-  -d '{"text": "I love spending time alone reading books and thinking about abstract concepts."}'
-```
-
-### Environment Variables
-
-Set environment variables in Railway dashboard or via CLI:
-```bash
-railway variables set PORT=9696
-railway variables set MODELS_DIR=/app/models
-```
-
-### Monitoring
-
-View logs in Railway dashboard or via CLI:
-```bash
-railway logs
 ```
 
 ## Model Performance
