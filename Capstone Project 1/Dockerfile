@@ -43,4 +43,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:9696/health')" || exit 1
 
 # Run the prediction service with gunicorn for production
-CMD ["gunicorn", "--bind", "0.0.0.0:9696", "--workers", "2", "--timeout", "120", "predict:app"]
+# Railway provides PORT env var, default to 9696 for local
+CMD gunicorn --bind 0.0.0.0:${PORT:-9696} --workers 2 --timeout 120 predict:app
