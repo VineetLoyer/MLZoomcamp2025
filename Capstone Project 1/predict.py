@@ -16,7 +16,7 @@ import os
 import sys
 from pathlib import Path
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template_string
 
 # Add src to path for importing project modules
 sys.path.insert(0, str(Path(__file__).parent / 'src'))
@@ -179,6 +179,126 @@ def health():
             "status": "unhealthy",
             "reason": "Models not loaded"
         }), 503
+
+
+# HTML template for the web demo
+HTML_TEMPLATE = '''
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MBTI Personality Predictor</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; padding: 20px;
+        }
+        .container { max-width: 700px; margin: 0 auto; }
+        h1 { color: white; text-align: center; margin-bottom: 10px; font-size: 2em; }
+        .subtitle { color: rgba(255,255,255,0.8); text-align: center; margin-bottom: 30px; }
+        .card { background: white; border-radius: 16px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
+        textarea { 
+            width: 100%; height: 150px; padding: 15px; border: 2px solid #e0e0e0;
+            border-radius: 10px; font-size: 16px; resize: vertical; margin-bottom: 20px;
+        }
+        textarea:focus { outline: none; border-color: #667eea; }
+        button { 
+            width: 100%; padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; border: none; border-radius: 10px; font-size: 18px; cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        button:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(102,126,234,0.4); }
+        button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .result { margin-top: 25px; padding: 20px; background: #f8f9fa; border-radius: 10px; display: none; }
+        .mbti-type { font-size: 48px; font-weight: bold; text-align: center; color: #667eea; margin-bottom: 20px; }
+        .dimension { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #e0e0e0; }
+        .dimension:last-child { border-bottom: none; }
+        .dim-label { font-weight: 600; color: #333; }
+        .confidence-bar { width: 200px; height: 24px; background: #e0e0e0; border-radius: 12px; overflow: hidden; position: relative; }
+        .confidence-fill { height: 100%; border-radius: 12px; transition: width 0.5s; }
+        .confidence-text { position: absolute; width: 100%; text-align: center; line-height: 24px; font-size: 12px; font-weight: 600; }
+        .error { color: #dc3545; text-align: center; margin-top: 15px; }
+        .footer { text-align: center; margin-top: 20px; color: rgba(255,255,255,0.7); font-size: 14px; }
+        .footer a { color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧠 MBTI Personality Predictor</h1>
+        <p class="subtitle">Predict your Myers-Briggs personality type from text</p>
+        <div class="card">
+            <textarea id="text" placeholder="Enter some text about yourself, your thoughts, or how you communicate... (minimum 10 characters)"></textarea>
+            <button id="predict-btn" onclick="predict()">Predict My Personality</button>
+            <div id="error" class="error"></div>
+            <div id="result" class="result">
+                <div id="mbti-type" class="mbti-type"></div>
+                <div id="dimensions"></div>
+            </div>
+        </div>
+        <p class="footer">Built for <a href="https://github.com/DataTalksClub/machine-learning-zoomcamp" target="_blank">ML Zoomcamp</a> Capstone Project</p>
+    </div>
+    <script>
+        async function predict() {
+            const text = document.getElementById('text').value;
+            const btn = document.getElementById('predict-btn');
+            const error = document.getElementById('error');
+            const result = document.getElementById('result');
+            
+            error.textContent = '';
+            result.style.display = 'none';
+            btn.disabled = true;
+            btn.textContent = 'Analyzing...';
+            
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text })
+                });
+                const data = await response.json();
+                
+                if (data.error) {
+                    error.textContent = data.error;
+                } else {
+                    document.getElementById('mbti-type').textContent = data.mbti_type;
+                    const dims = document.getElementById('dimensions');
+                    dims.innerHTML = '';
+                    const labels = { IE: ['Introvert', 'Extrovert'], NS: ['Intuitive', 'Sensing'], TF: ['Thinking', 'Feeling'], JP: ['Judging', 'Perceiving'] };
+                    const colors = { IE: '#667eea', NS: '#28a745', TF: '#fd7e14', JP: '#dc3545' };
+                    for (const [dim, conf] of Object.entries(data.confidence)) {
+                        const keys = Object.keys(conf);
+                        const winner = conf[keys[0]] > conf[keys[1]] ? keys[0] : keys[1];
+                        const pct = Math.round(conf[winner] * 100);
+                        dims.innerHTML += `
+                            <div class="dimension">
+                                <span class="dim-label">${labels[dim][0]} / ${labels[dim][1]}</span>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: ${pct}%; background: ${colors[dim]};"></div>
+                                    <span class="confidence-text">${winner}: ${pct}%</span>
+                                </div>
+                            </div>`;
+                    }
+                    result.style.display = 'block';
+                }
+            } catch (e) {
+                error.textContent = 'Failed to connect to server';
+            }
+            btn.disabled = false;
+            btn.textContent = 'Predict My Personality';
+        }
+    </script>
+</body>
+</html>
+'''
+
+
+@app.route('/', methods=['GET'])
+def home():
+    """Serve the web demo interface."""
+    return render_template_string(HTML_TEMPLATE)
 
 
 # Load models when module is imported
