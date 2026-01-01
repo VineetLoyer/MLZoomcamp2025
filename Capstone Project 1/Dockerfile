@@ -31,6 +31,8 @@ RUN python -c "import nltk; nltk.download('punkt', quiet=True); nltk.download('s
 # Copy source code
 COPY src/ ./src/
 COPY predict.py .
+COPY start.sh .
+RUN chmod +x start.sh
 
 # Copy trained model artifacts
 COPY models/ ./models/
@@ -38,10 +40,9 @@ COPY models/ ./models/
 # Expose the service port
 EXPOSE 9696
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:9696/health')" || exit 1
+# Health check - use PORT env var
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=5 \
+    CMD python -c "import os; import urllib.request; urllib.request.urlopen(f'http://localhost:{os.environ.get(\"PORT\", 9696)}/health')" || exit 1
 
-# Run the prediction service with gunicorn for production
-# Railway provides PORT env var, default to 9696 for local
-CMD gunicorn --bind 0.0.0.0:${PORT:-9696} --workers 2 --timeout 120 predict:app
+# Run the prediction service
+CMD ["./start.sh"]
