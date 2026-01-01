@@ -237,22 +237,26 @@ docker run -d -p 8080:8080 -e PORT=8080 mbti-predictor
 
 ## Cloud Deployment (Railway)
 
-The service is deployed on [Railway](https://railway.app/) and available at:
+The service is deployed on [Railway](https://railway.app/) with a browser-friendly demo interface.
 
-**Live URL:** https://mlzoomcamp2025-production.up.railway.app
+**🚀 Live Demo:** https://mlzoomcamp2025-production.up.railway.app/
 
-### Test the Live Service
+Simply visit the URL, enter some text, and get your MBTI personality prediction!
+
+### API Endpoints
+
+The deployed service also provides REST API endpoints:
 
 Health check:
 ```bash
 curl https://mlzoomcamp2025-production.up.railway.app/health
 ```
 
-Make a prediction:
+Make a prediction (via API):
 ```bash
 curl -X POST https://mlzoomcamp2025-production.up.railway.app/predict \
   -H "Content-Type: application/json" \
-  -d '{"text": "I love spending time alone reading books and thinking about abstract concepts. I prefer deep conversations over small talk and enjoy analyzing complex problems."}'
+  -d '{"text": "I love spending time alone reading books and thinking about abstract concepts."}'
 ```
 
 ### Deploy Your Own Instance
