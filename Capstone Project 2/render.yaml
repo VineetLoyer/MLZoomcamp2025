@@ -1,0 +1,17 @@
+# Render Blueprint for Coffee Quality Prediction Service
+# https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: coffee-quality-prediction
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: 9696
+      - key: MODEL_PATH
+        value: /app/models/model.pkl
+      - key: PYTHONUNBUFFERED
+        value: "1"
