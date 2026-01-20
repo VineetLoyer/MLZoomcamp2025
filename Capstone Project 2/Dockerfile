@@ -4,7 +4,6 @@ WORKDIR /app
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PORT=9696 \
     MODEL_PATH=/app/models/model.pkl
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -27,9 +26,6 @@ COPY src/ ./src/
 COPY predict.py .
 COPY models/model.pkl ./models/
 
-EXPOSE 9696
+EXPOSE 8080
 
-HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-    CMD python -c "import os; import urllib.request; urllib.request.urlopen(f'http://localhost:{os.environ.get(\"PORT\", 9696)}/health')" || exit 1
-
-CMD gunicorn --bind 0.0.0.0:${PORT:-9696} --workers 1 --timeout 120 predict:app
+CMD gunicorn --bind 0.0.0.0:${PORT:-8080} --workers 1 --timeout 120 predict:app
