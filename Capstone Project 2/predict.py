@@ -313,7 +313,7 @@ HTML_TEMPLATE = '''
                 <div id="quality-badge" class="quality-badge"></div>
             </div>
         </div>
-        <p class="footer">Built for <a href="https://github.com/DataTalksClub/machine-learning-zoomcamp" target="_blank">ML Zoomcamp</a> Capstone Project</p>
+        <p class="footer">Built by <a href="https://github.com/VineetLoyer" target="_blank">Vineet Loyer</a> for <a href="https://github.com/DataTalksClub/machine-learning-zoomcamp" target="_blank">ML Zoomcamp</a> Capstone Project</p>
     </div>
     <script>
         const features = ['aroma', 'flavor', 'aftertaste', 'acidity', 'body', 'balance', 'uniformity', 'clean_cup', 'sweetness', 'cupper_points'];
